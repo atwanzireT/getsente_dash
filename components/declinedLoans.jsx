@@ -28,10 +28,6 @@ const DeclinedLoans = () => {
     return () => unsubscribe();
   }, []);
 
-  const pickLoanData = () => {
-
-  }
-
   return (
     <section className="section">
       <div className="row">
