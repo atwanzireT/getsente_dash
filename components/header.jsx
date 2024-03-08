@@ -1,13 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import logo from '../app/logo.png'
 
 export default function HeaderBar() {
   return (
     <header id="header" className="header fixed-top d-flex align-items-center">
       <div className="d-flex align-items-center justify-content-between">
         <Link href="/" className="logo d-flex align-items-center">
-          <img src="/assets/img/logo.png" alt="" />
-          <span className="d-none d-lg-block">NiceAdmin</span>
+          <Image src={logo} width={30} height={30} alt="" />
+          <span className="d-none d-lg-block">GetSente</span>
         </Link>
         <i className="bi bi-list toggle-sidebar-btn"></i>
       </div>
