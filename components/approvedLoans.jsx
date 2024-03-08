@@ -64,7 +64,7 @@ const ApprovedLoans = () => {
                       <td>{loan.netAmount}</td>
                       <td>{loan.transactionId}</td>
                       <td>{loan.status}</td>
-                      <td><button className='btn btn-primary' onClick={() => { router.push('/loandetail/[id]', `/loandetail/${loan.id}`)}}>Manage</button></td>
+                      <td><button className='btn btn-primary' onClick={() => { router.push(`/loandetail/${loan.id}`)}}>Manage</button></td>
                     </tr>
                   ))}
                 </tbody>
