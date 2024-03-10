@@ -2,6 +2,7 @@ import { firebase_firestore } from '@/firebaseconfig';
 import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie'
 
 const ApprovedLoans = () => {
   const [loanData, setLoanData] = useState([]);
@@ -28,8 +29,9 @@ const ApprovedLoans = () => {
     return () => unsubscribe();
   }, []);
 
-  const pickLoanData = () => {
-
+  const pickLoanData = (loanid) => {
+    Cookies.set('id', loanid)
+    router.push(`/loandetail/${loanid}`)
   }
 
   return (
@@ -64,7 +66,7 @@ const ApprovedLoans = () => {
                       <td>{loan.netAmount}</td>
                       <td>{loan.transactionId}</td>
                       <td>{loan.status}</td>
-                      <td><button className='btn btn-primary' onClick={() => { router.push(`/loandetail/${loan.id}`)}}>Manage</button></td>
+                      <td><button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button></td>
                     </tr>
                   ))}
                 </tbody>
