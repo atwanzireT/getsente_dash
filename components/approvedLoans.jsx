@@ -30,6 +30,9 @@ const ApprovedLoans = () => {
   }, []);
 
   const pickLoanData = (loanid) => {
+    if (Cookies.get('id')) {
+      Cookies.remove('id');
+    }
     Cookies.set('id', loanid)
     useRouter.push('/loandetail/')
   }

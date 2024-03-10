@@ -97,18 +97,19 @@ export default function LoanDetailSection() {
                                 </div>
 
                                 <p className="col-lg-7 col-md-6">
+                                <h6 className="col-lg-5 col-md-6 label">Father / Mother&apos;s No:</h6>
                                     {user.father ? `${user.father.name} (Contact: ${user.father.contact})` : "Not Available"}
                                 </p>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label">Friend No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Friend&apos;s No:</h6>
                                     <p className="col-lg-7 col-md-6">{user.friend ? `${user.friend.name} (Contact: ${user.friend.contact})` : "Not Available"}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label">Sister/ Brother No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Sister/ Brother&apos;s No:</h6>
                                     <p className="col-lg-7 col-md-6">{user.sister ? `${user.sister.name} (Contact: ${user.sister.contact})` : "Not Available"}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label">Wife/ Husband No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Wife/ Husband&apos;s No:</h6>
                                     <p className="col-lg-7 col-md-6">{user.wife ? `${user.wife.name} (Contact: ${user.wife.contact})` : "Not Available"}</p>
                                 </div>
 
