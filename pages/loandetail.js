@@ -1,18 +1,14 @@
 import React from 'react'
-import { useRouter } from 'next/router';
 import HeaderBar from '@/components/header';
 import Sidebar from '@/components/sidebar';
 import DataTableSection from '@/components/loanRequests';
-import "../../app/page.module.css";
-import "../../app/globals.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import LoanDetailSection from '@/components/loanDetails';
 import Link from 'next/link';
+import "../app/page.module.css";
+import "../app/globals.css";
 
 export default function loandetail() {
-  const router = useRouter();
-  const { id } = router.query;
-
   return (
     <div>
        <HeaderBar />

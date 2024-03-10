@@ -4,7 +4,7 @@ import { firebase_firestore } from '@/firebaseconfig';
 import Cookies from 'js-cookie';
 
 export default function LoanDetailSection() {
-    const id  = Cookies.get("id");
+    const id = Cookies.get("id");
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState([]);
     const [loanData, setLoanData] = useState([]);
@@ -63,7 +63,7 @@ export default function LoanDetailSection() {
 
             <div className="row" >
                 {userInfo.map((user, index) => (
-                    <div className="col-xl-6">
+                    <div className="col-xl-6" key={index}>
                         <div className="card">
                             <div className="card-body pt-4 d-flex flex-column">
                                 <h3 className="card-title">User Details</h3>
@@ -95,28 +95,29 @@ export default function LoanDetailSection() {
                                     <h6 className="col-lg-5 col-md-6 label ">Company Location</h6>
                                     <p className="col-lg-7 col-md-6">{user.companyLocation}</p>
                                 </div>
+
+                                <p className="col-lg-7 col-md-6">
+                                    {user.father ? `${user.father.name} (Contact: ${user.father.contact})` : "Not Available"}
+                                </p>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">Father's/ Mother's No</h6>
-                                    <p className="col-lg-7 col-md-6"> {user.father ? `${user.father.name} (Contact: ${user.father.contact})` : "Not Available"}</p>
+                                    <h6 className="col-lg-5 col-md-6 label">Friend No:</h6>
+                                    <p className="col-lg-7 col-md-6">{user.friend ? `${user.friend.name} (Contact: ${user.friend.contact})` : "Not Available"}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">Friend's No:</h6>
-                                    <p className="col-lg-7 col-md-6"> {user.friend ? `${user.friend.name} (Contact: ${user.friend.contact})` : "Not Available"}</p>
+                                    <h6 className="col-lg-5 col-md-6 label">Sister/ Brother No:</h6>
+                                    <p className="col-lg-7 col-md-6">{user.sister ? `${user.sister.name} (Contact: ${user.sister.contact})` : "Not Available"}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">Sister/ Brother's No:</h6>
-                                    <p className="col-lg-7 col-md-6"> {user.sister ? `${user.sister.name} (Contact: ${user.sister.contact})` : "Not Available"}</p>
+                                    <h6 className="col-lg-5 col-md-6 label">Wife/ Husband No:</h6>
+                                    <p className="col-lg-7 col-md-6">{user.wife ? `${user.wife.name} (Contact: ${user.wife.contact})` : "Not Available"}</p>
                                 </div>
-                                <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">Wife/ Husband's No:</h6>
-                                    <p className="col-lg-7 col-md-6"> {user.wife ? `${user.wife.name} (Contact: ${user.wife.contact})` : "Not Available"}</p>
-                                </div>
+
                             </div>
                         </div>
                     </div>
                 ))}
                 {loanData.map((loan, index) => (
-                    <div className="col-xl-6">
+                    <div className="col-xl-6" key={index}>
                         <div className="card">
                             <div className="card-body pt-3">
                                 {/* Bordered Tabs */}
