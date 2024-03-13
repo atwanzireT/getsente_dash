@@ -11,7 +11,7 @@ import Link from 'next/link';
 import "../app/page.module.css";
 import "../app/globals.css";
 
-export default function userContacts() {
+export default function UserContacts() {
     const id = Cookies.get("id");
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState([]);
