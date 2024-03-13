@@ -130,7 +130,7 @@ export default function Dashboard() {
                                     </a>
                                 </div>
                                 <div className="card-body">
-                                    <h5 className="card-title">Recent Sales</h5>
+                                    <h5 className="card-title">Recent Loans</h5>
                                     <table className="table table-borderless datatable">
                                         <thead>
                                             <tr>

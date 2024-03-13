@@ -2,14 +2,25 @@ import { firebase_firestore } from '@/firebaseconfig';
 import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 
 const DataTableSection = () => {
   const [loanData, setLoanData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [userInfo, setUserInfo] = useState([]);
-  const router = useRouter()
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const router = useRouter();
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 900);
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const loanCollection = collection(firebase_firestore, 'loanRequest');
@@ -29,56 +40,91 @@ const DataTableSection = () => {
 
     // Unsubscribe from the snapshot listener when the component unmounts
     return () => unsubscribe();
-    
+
   }, []);
 
   const pickLoanData = (loanid) => {
     if (Cookies.get('id')) {
       Cookies.remove('id');
     }
-    Cookies.set('id',loanid)
-    useRouter.push('/loandetail/')
-  }
+    Cookies.set('id', loanid);
+    router.push('/loandetail/');
+  };
+
+
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleString(); // Convert date to human-readable format
+  };
+
 
   return (
     <section className="section">
-      <div className="row">
-        <div className="col-lg-12">
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">Datatables</h5>
-
-              {/* Table with stripped rows */}
-              <table className="table datatable">
-                <thead>
-                  <tr>
-                    <th>User ID</th>
-                    <th>Loan ID</th>
-                    <th>Amount Paid</th>
-                    <th>Amount Requested</th>
-                    <th>Net Amount</th>
-                    <th>Transaction ID</th>
-                    <th>Status</th>
-                    <th>Manage</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loanData.map((loan) => (
-                    <tr key={loan.id}>
-                      <td>{loan.id}</td>
-                      <td>{loan.loanID}</td>
-                      <td>{loan.amountPaid}</td>
-                      <td>{loan.amountRequested}</td>
-                      <td>{loan.netAmount}</td>
-                      <td>{loan.transactionId}</td>
-                      <td>{loan.status}</td>
-                      <td><button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {/* End Table with stripped rows */}
-            </div>
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-12">
+            {isSmallScreen ?
+              loanData.map((loan) => (
+                <div className="card my-2" key={loan.id}>
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-6">
+                        <p className="card-text">
+                          <span className='text-primary text-bold'>User ID:</span> {loan.id}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold'>Loan ID:</span> {loan.loanID}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold'>Amount Requested:</span> {loan.amountRequested}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold'>Net Amount:</span> {loan.netAmount}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold'>Status:</span> {loan.status}
+                        </p>
+                        <p className="card-text">
+                          <button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+              : (
+                <div className="card">
+                  <div className="card-body">
+                    <h5 className="card-title">Datatables</h5>
+                    <table className="table datatable">
+                      <thead>
+                        <tr>
+                          <th>User ID</th>
+                          <th>Loan ID</th>
+                          <th>Amount Requested</th>
+                          <th>Net Amount</th>
+                          <th>Status</th>
+                          <th>Created</th>
+                          <th>Manage</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {loanData.map((loan) => (
+                          <tr key={loan.id}>
+                            <td>{loan.id}</td>
+                            <td>{loan.loanID}</td>
+                            <td>{loan.amountRequested}</td>
+                            <td>{loan.netAmount}</td>
+                            <td>{loan.status}</td>
+                            <td>{formatDate(loan.created)}</td>
+                            <td><button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
           </div>
         </div>
       </div>

@@ -1,13 +1,13 @@
 import { firebase_firestore } from '@/firebaseconfig';
-import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 
 const ApprovedLoans = () => {
   const [loanData, setLoanData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -50,14 +50,13 @@ const ApprovedLoans = () => {
     router.push('/loandetail/');
   };
 
-
   return (
     <section className="section">
-      <div className="row">
-        <div className="col-lg-12">
-          {isSmallScreen ?
-            <div className="container">
-              {loanData.map((loan) => (
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-12">
+            {isSmallScreen ?
+              loanData.map((loan) => (
                 <div className="card my-2" key={loan.id}>
                   <div className="card-body">
                     <div className="row">
@@ -91,47 +90,46 @@ const ApprovedLoans = () => {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-            : (
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">Datatables</h5>
-                  <table className="table datatable">
-                    <thead>
-                      <tr>
-                        <th>User ID</th>
-                        <th>Loan ID</th>
-                        <th>Amount Paid</th>
-                        <th>Amount Requested</th>
-                        <th>Net Amount</th>
-                        <th>Transaction ID</th>
-                        <th>Status</th>
-                        <th>Manage</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loanData.map((loan) => (
-                        <tr key={loan.id}>
-                          <td>{loan.id}</td>
-                          <td>{loan.loanID}</td>
-                          <td>{loan.amountPaid}</td>
-                          <td>{loan.amountRequested}</td>
-                          <td>{loan.netAmount}</td>
-                          <td>{loan.transactionId}</td>
-                          <td>{loan.status}</td>
-                          <td><button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button></td>
+              ))
+              : (
+                <div className="card">
+                  <div className="card-body">
+                    <h5 className="card-title">Datatables</h5>
+                    <table className="table datatable">
+                      <thead>
+                        <tr>
+                          <th>User ID</th>
+                          <th>Loan ID</th>
+                          <th>Amount Paid</th>
+                          <th>Amount Requested</th>
+                          <th>Net Amount</th>
+                          <th>Transaction ID</th>
+                          <th>Status</th>
+                          <th>Manage</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {loanData.map((loan) => (
+                          <tr key={loan.id}>
+                            <td>{loan.id}</td>
+                            <td>{loan.loanID}</td>
+                            <td>{loan.amountPaid}</td>
+                            <td>{loan.amountRequested}</td>
+                            <td>{loan.netAmount}</td>
+                            <td>{loan.transactionId}</td>
+                            <td>{loan.status}</td>
+                            <td><button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+          </div>
         </div>
       </div>
     </section>
-
   );
 };
 

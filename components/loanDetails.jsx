@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs, where, doc, updateDoc, query } from 'firebase/firestore';
 import { firebase_firestore } from '@/firebaseconfig';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 
 export default function LoanDetailSection() {
     const id = Cookies.get("id");
@@ -12,6 +13,8 @@ export default function LoanDetailSection() {
     const [selectedStatus, setSelectedStatus] = useState('');
     const [value, setValue] = useState('');
 
+    console.log("User data: ", userInfo)
+    const router = useRouter();
     useEffect(() => {
         const fetchData = async () => {
             if (!id) return; // Ensure id is available before fetching data
@@ -58,6 +61,14 @@ export default function LoanDetailSection() {
         }
     };
 
+    const pickLoanData = (loanid) => {
+        if (Cookies.get('id')) {
+            Cookies.remove('id');
+        }
+        Cookies.set('id', loanid);
+        router.push('/userContacts/');
+    };
+
     return (
         <section className="section profile">
 
@@ -97,7 +108,7 @@ export default function LoanDetailSection() {
                                 </div>
 
                                 <p className="col-lg-7 col-md-6">
-                                <h6 className="col-lg-5 col-md-6 label">Father / Mother&apos;s No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Father / Mother&apos;s No:</h6>
                                     {user.father ? `${user.father.name} (Contact: ${user.father.contact})` : "Not Available"}
                                 </p>
                                 <div className="row">
@@ -169,6 +180,9 @@ export default function LoanDetailSection() {
                                                 </div>
                                             </div>
                                         }
+                                        <div className="row">
+                                            <button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>View User Contacts</button>
+                                        </div>
                                     </div>
                                 </div>
                                 {/* End Bordered Tabs */}
