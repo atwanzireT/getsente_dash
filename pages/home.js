@@ -4,15 +4,13 @@ import "../app/globals.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import HeaderBar from "../components/header";
 import Sidebar from "../components/sidebar";
-import DataTableSection from "../components/loanRequests";
-import ApprovedLoans from '@/components/approvedLoans';
+import Dashboard from "../components/dashboard";
 import Link from 'next/link';
-import DeclinedLoans from '@/components/declinedLoans';
 import { onAuthStateChanged } from 'firebase/auth';
 import { firebase_auth } from '@/firebaseconfig';
 import NoAcc from '@/components/noAcc';
 
-export default function declinedLoans() {
+export default function Home() {
     const [isAuth, setIsAuth] = useState(false);
 
     useEffect(() => {
@@ -31,9 +29,9 @@ export default function declinedLoans() {
         return () => unsubscribe();
     }, []);
 
-  return (
-    <div>
-       <HeaderBar />
+    return (
+        <div>
+            <HeaderBar />
             <Sidebar />
             <main id="main" className="main">
                 <div className="pagetitle">
@@ -43,13 +41,13 @@ export default function declinedLoans() {
                             <li className="breadcrumb-item">
                                 <Link href="/">Home</Link>
                             </li>
-                            <li className="breadcrumb-item active">Declined Loans</li>
+                            <li className="breadcrumb-item active">Dashboard</li>
                         </ol>
                     </nav>
                 </div>
-                {isAuth ? <DeclinedLoans /> :
+                {isAuth ? <Dashboard /> :
                 <NoAcc />}
             </main>
-    </div>
-  )
+        </div>
+    )
 }

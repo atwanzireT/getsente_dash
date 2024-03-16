@@ -7,11 +7,32 @@ import LoanDetailSection from '@/components/loanDetails';
 import Link from 'next/link';
 import "../app/page.module.css";
 import "../app/globals.css";
+import { onAuthStateChanged } from 'firebase/auth';
+import { firebase_auth } from '@/firebaseconfig';
+import NoAcc from '@/components/noAcc';
 
 export default function loandetail() {
-  return (
-    <div>
-       <HeaderBar />
+    const [isAuth, setIsAuth] = useState(false);
+
+    useEffect(() => {
+        // Set up Firebase auth state observer
+        const unsubscribe = onAuthStateChanged(firebase_auth, (user) => {
+            if (user) {
+                // User is signed in.
+                setIsAuth(true);
+            } else {
+                // User is signed out.
+                setIsAuth(false);
+            }
+        });
+
+        // Cleanup function
+        return () => unsubscribe();
+    }, []);
+
+    return (
+        <div>
+            <HeaderBar />
             <Sidebar />
             <main id="main" className="main">
                 <div className="pagetitle">
@@ -25,8 +46,9 @@ export default function loandetail() {
                         </ol>
                     </nav>
                 </div>
-                <LoanDetailSection />
+                {isAuth ? <LoanDetailSection /> :
+                    <NoAcc />}
             </main>
-    </div>
-  )
+        </div>
+    )
 }
