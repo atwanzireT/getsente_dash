@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import HeaderBar from '@/components/header';
 import Sidebar from '@/components/sidebar';
 import DataTableSection from '@/components/loanRequests';
@@ -11,7 +11,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { firebase_auth } from '@/firebaseconfig';
 import NoAcc from '@/components/noAcc';
 
-export default function loandetail() {
+export default function LoandetailPage() {
     const [isAuth, setIsAuth] = useState(false);
 
     useEffect(() => {

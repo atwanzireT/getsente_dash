@@ -11,7 +11,7 @@ import { firebase_auth } from '@/firebaseconfig';
 import NoAcc from '@/components/noAcc';
 
 
-export default function loanRequests() {
+export default function LoanRequestsPage() {
     const [isAuth, setIsAuth] = useState(false);
 
     useEffect(() => {

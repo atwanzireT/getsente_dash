@@ -12,7 +12,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { firebase_auth } from '@/firebaseconfig';
 import NoAcc from '@/components/noAcc';
 
-export default function declinedLoans() {
+export default function DeclinedLoansPage() {
     const [isAuth, setIsAuth] = useState(false);
 
     useEffect(() => {

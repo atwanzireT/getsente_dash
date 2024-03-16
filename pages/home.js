@@ -10,7 +10,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { firebase_auth } from '@/firebaseconfig';
 import NoAcc from '@/components/noAcc';
 
-export default function Home() {
+export default function HomePage() {
     const [isAuth, setIsAuth] = useState(false);
 
     useEffect(() => {
