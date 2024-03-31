@@ -10,6 +10,8 @@ export default function LoanDetailSection() {
     const [userInfo, setUserInfo] = useState([]);
     const [loanData, setLoanData] = useState([]);
     const [statusUpdated, setStatusUpdated] = useState(false);
+    const [approvedStatus, setApprovedStatus] = useState(false);
+    const [declinedStatus, setDeclinedStatus] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState('');
     const [value, setValue] = useState('');
 
@@ -37,8 +39,14 @@ export default function LoanDetailSection() {
 
                 // Check if loan status is 'Pending'
                 const pendingLoan = loanData.find(loan => loan.status === 'Pending');
+                const approvedLoan = loanData.find(loan => loan.status === 'Approved');
+
                 if (pendingLoan) {
                     setStatusUpdated(true);
+                } else if (approvedLoan) {
+                    setApprovedStatus(true);
+                } else {
+                    setDeclinedStatus(true);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -164,6 +172,17 @@ export default function LoanDetailSection() {
                                             <p className="col-lg-3 col-md-4 label">Loan Amount</p>
                                             <p className="col-lg-9 col-md-8">{loan.amountRequested}</p>
                                         </div>
+                                        {approvedStatus &&
+                                            <form className='mx-2'>
+                                                <div className="row">
+                                                    <p className="col-lg-3 col-md-4 label">Paid Amount</p>
+                                                    <input className='form-control' style={{ borderColor: 'blue', padding: '8px' }} placeholder='Enter Paid Amount' />
+                                                    <button className='btn btn-primary mt-3'>SUBMIT</button>
+                                                </div>
+                                            </form>
+                                        }
+
+
                                         {statusUpdated &&
                                             <div className="row">
                                                 <p className="col-lg-3 col-md-4 label">Status</p>
@@ -180,9 +199,6 @@ export default function LoanDetailSection() {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="row">
-                                            <button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>View User Contacts</button>
-                                        </div>
                                     </div>
                                 </div>
                                 {/* End Bordered Tabs */}
