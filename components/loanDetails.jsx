@@ -3,51 +3,33 @@ import { collection, getDocs, where, doc, updateDoc, query } from 'firebase/fire
 import { firebase_firestore } from '@/firebaseconfig';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export default function LoanDetailSection() {
     const id = Cookies.get("id");
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState([]);
     const [loanData, setLoanData] = useState([]);
-    const [statusUpdated, setStatusUpdated] = useState(false);
-    const [approvedStatus, setApprovedStatus] = useState(false);
-    const [declinedStatus, setDeclinedStatus] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState('');
-    const [value, setValue] = useState('');
-
-    console.log("User data: ", userInfo)
+    const [processing, setProcessing] = useState(false); // State for loading indicator
     const router = useRouter();
+
     useEffect(() => {
         const fetchData = async () => {
-            if (!id) return; // Ensure id is available before fetching data
+            if (!id) return;
 
             setLoading(true);
             try {
-                // Fetch user info
                 const userInfoRef = collection(firebase_firestore, "NIDinfo");
                 const userInfoQuery = query(userInfoRef, where("userUID", "==", id));
                 const userInfoSnapshot = await getDocs(userInfoQuery);
                 const userInfoData = userInfoSnapshot.docs.map(doc => doc.data());
                 setUserInfo(userInfoData);
 
-                // Fetch loan data
                 const loanRef = collection(firebase_firestore, 'loanRequest');
                 const loanQuery = query(loanRef, where("userUID", "==", id));
                 const loanSnapshot = await getDocs(loanQuery);
                 const loanData = loanSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setLoanData(loanData);
-
-                // Check if loan status is 'Pending'
-                const pendingLoan = loanData.find(loan => loan.status === 'Pending');
-                const approvedLoan = loanData.find(loan => loan.status === 'Approved');
-
-                if (pendingLoan) {
-                    setStatusUpdated(true);
-                } else if (approvedLoan) {
-                    setApprovedStatus(true);
-                } else {
-                    setDeclinedStatus(true);
-                }
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -58,80 +40,82 @@ export default function LoanDetailSection() {
         fetchData();
     }, [id]);
 
-    const handleStatusChange = async (loanId, newStatus) => {
+    const handleStatusChange = async (loanId, newStatus, userUID) => {
+        setProcessing(true);
         try {
             const loanDocRef = doc(firebase_firestore, 'loanRequest', loanId);
             await updateDoc(loanDocRef, { status: newStatus });
+            Cookies.set('id', userUID); // Set the userUID in cookies
             alert('Loan status updated successfully');
             router.push("/");
         } catch (error) {
             console.error('Error updating loan status:', error);
+        } finally {
+            setProcessing(false);
         }
     };
 
     const pickLoanData = (loanid) => {
-        if (Cookies.get('id')) {
-            Cookies.remove('id');
-        }
         Cookies.set('id', loanid);
         router.push('/userContacts/');
     };
 
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
     return (
         <section className="section profile">
-
-            <div className="row" >
+            <div className="row">
                 {userInfo.map((user, index) => (
                     <div className="col-xl-6" key={index}>
                         <div className="card">
                             <div className="card-body pt-4 d-flex flex-column">
                                 <h3 className="card-title">User Details</h3>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">UserID</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">UserID</h6>
                                     <p className="col-lg-7 col-md-6">{user.userUID}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">Name</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Name</h6>
                                     <p className="col-lg-7 col-md-6">{user.firstname} {user.othername}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">Email</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Email</h6>
                                     <p className="col-lg-7 col-md-6">{user.useremail}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">NIN Number</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">NIN Number</h6>
                                     <p className="col-lg-7 col-md-6">{user.ninNo}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">WhatsApp Number</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">WhatsApp Number</h6>
                                     <p className="col-lg-7 col-md-6">{user.whatsNo}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">Company Name</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Company Name</h6>
                                     <p className="col-lg-7 col-md-6">{user.companyName}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label ">Company Location</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Company Location</h6>
                                     <p className="col-lg-7 col-md-6">{user.companyLocation}</p>
                                 </div>
-
-                                <p className="col-lg-7 col-md-6">
-                                    <h6 className="col-lg-5 col-md-6 label">Father / Mother&apos;s No:</h6>
-                                    {user.father ? `${user.father.name} (Contact: ${user.father.contact})` : "Not Available"}
-                                </p>
+                                <div className="row">
+                                    <h6 className="col-lg-5 col-md-6 label">Father/Mother&apos;s No:</h6>
+                                    <p className="col-lg-7 col-md-6">{user.father ? `${user.father.name} (Contact: ${user.father.contact})` : "Not Available"}</p>
+                                </div>
                                 <div className="row">
                                     <h6 className="col-lg-5 col-md-6 label">Friend&apos;s No:</h6>
                                     <p className="col-lg-7 col-md-6">{user.friend ? `${user.friend.name} (Contact: ${user.friend.contact})` : "Not Available"}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label">Sister/ Brother&apos;s No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Sister/Brother&apos;s No:</h6>
                                     <p className="col-lg-7 col-md-6">{user.sister ? `${user.sister.name} (Contact: ${user.sister.contact})` : "Not Available"}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label">Wife/ Husband&apos;s No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Wife/Husband&apos;s No:</h6>
                                     <p className="col-lg-7 col-md-6">{user.wife ? `${user.wife.name} (Contact: ${user.wife.contact})` : "Not Available"}</p>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -140,74 +124,72 @@ export default function LoanDetailSection() {
                     <div className="col-xl-6" key={index}>
                         <div className="card">
                             <div className="card-body pt-3">
-                                {/* Bordered Tabs */}
                                 <ul className="nav nav-tabs nav-tabs-bordered">
                                     <li className="nav-item">
-                                        <button
-                                            className="nav-link active"
-                                            data-bs-toggle="tab"
-                                            data-bs-target="#profile-overview"
-                                        >
+                                        <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">
                                             Overview
                                         </button>
                                     </li>
                                 </ul>
                                 <div className="tab-content pt-2">
-                                    <div
-                                        className="tab-pane fade show active profile-overview"
-                                        id="profile-overview"
-                                    >
+                                    <div className="tab-pane fade show active profile-overview" id="profile-overview">
                                         <h5 className="card-title">Loan Details</h5>
                                         <div className="row">
-                                            <p className="col-lg-3 col-md-4 label ">Loan ID</p>
+                                            <p className="col-lg-3 col-md-4 label">Loan ID</p>
                                             <p className="col-lg-9 col-md-8">{loan.loanID}</p>
                                         </div>
                                         <div className="row">
                                             <p className="col-lg-3 col-md-4 label">User UID</p>
-                                            <p className="col-lg-9 col-md-8">
-                                                {loan.userUID}
-                                            </p>
+                                            <p className="col-lg-9 col-md-8">{loan.userUID}</p>
                                         </div>
                                         <div className="row">
                                             <p className="col-lg-3 col-md-4 label">Loan Amount</p>
                                             <p className="col-lg-9 col-md-8">{loan.amountRequested}</p>
                                         </div>
-                                        {approvedStatus &&
+                                        {loan.status === 'Approved' && (
                                             <form className='mx-2'>
                                                 <div className="row">
                                                     <p className="col-lg-3 col-md-4 label">Paid Amount</p>
-                                                    <input className='form-control' style={{ borderColor: 'blue', padding: '8px' }} placeholder='Enter Paid Amount' />
+                                                    <input
+                                                        className='form-control'
+                                                        style={{ borderColor: 'blue', padding: '8px' }}
+                                                        placeholder='Enter Paid Amount'
+                                                    />
                                                     <button className='btn btn-primary mt-3'>SUBMIT</button>
                                                 </div>
                                             </form>
-                                        }
-
-
-                                        {statusUpdated &&
+                                        )}
+                                        {loan.status === 'Pending' && (
                                             <div className="row">
                                                 <p className="col-lg-3 col-md-4 label">Status</p>
                                                 <div className="col-lg-9 col-md-8">
-                                                    <select
-                                                        className='form-select'
-                                                        value={value}
-                                                        onChange={(e) => handleStatusChange(e, loan.id)}
+                                                    <button
+                                                        className='btn btn-success me-2'
+                                                        onClick={() => handleStatusChange(loan.id, 'Approved', loan.userUID)}
+                                                        disabled={processing}
                                                     >
-                                                        <option value="Pending">Pending</option>
-                                                        <option value="Approved">Approved</option>
-                                                        <option value="Declined">Declined</option>
-                                                    </select>
+                                                        {processing ? 'Processing...' : 'Approve'}
+                                                    </button>
+                                                    <button
+                                                        className='btn btn-danger'
+                                                        onClick={() => handleStatusChange(loan.id, 'Declined', loan.userUID)}
+                                                        disabled={processing}
+                                                    >
+                                                        {processing ? 'Processing...' : 'Decline'}
+                                                    </button>
                                                 </div>
                                             </div>
-                                        }
+                                        )}
+                                        <div>
+                                            <Link href="/userContacts/" className="btn btn-primary" onClick={() => Cookies.set('id', loan.userUID)}>View Contacts</Link>
+                                        </div>
                                     </div>
                                 </div>
-                                {/* End Bordered Tabs */}
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
-
         </section>
     );
 };

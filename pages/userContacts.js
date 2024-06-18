@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs, where, query } from 'firebase/firestore';
+import { collection, getDocs, where, query, doc, getDoc } from 'firebase/firestore';
 import { firebase_firestore } from '@/firebaseconfig';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
-import React from 'react'
+import React from 'react';
 import HeaderBar from '@/components/header';
 import Sidebar from '@/components/sidebar';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -18,24 +18,29 @@ export default function UserContacts() {
     const [userContacts, setUserContacts] = useState([]);
 
     const router = useRouter();
+
     useEffect(() => {
         const fetchData = async () => {
-            if (!id) return; // Ensure id is available before fetching data
+            if (!id) return;
 
             setLoading(true);
             try {
-                // Fetch user info
+                // Fetch user information
                 const userInfoRef = collection(firebase_firestore, "NIDinfo");
                 const userInfoQuery = query(userInfoRef, where("userUID", "==", id));
                 const userInfoSnapshot = await getDocs(userInfoQuery);
                 const userInfoData = userInfoSnapshot.docs.map(doc => doc.data());
                 setUserInfo(userInfoData);
 
-                // Extract user contacts from userInfoData
-                const contacts = userInfoData.map(user => user.userContacts);
-                // Flatten the array of contacts arrays
-                const allContacts = contacts.flat();
-                setUserContacts(allContacts);
+                // Fetch user contacts
+                const contactDocRef = doc(firebase_firestore, "userContacts", id);
+                const contactDocSnap = await getDoc(contactDocRef);
+                if (contactDocSnap.exists()) {
+                    setUserContacts(contactDocSnap.data().userContact || []);
+                    console.log("Loading User Contacts: ", contactDocSnap.data().userContact);
+                } else {
+                    console.log("No such document!");
+                }
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -45,6 +50,10 @@ export default function UserContacts() {
 
         fetchData();
     }, [id]);
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div>
@@ -68,26 +77,23 @@ export default function UserContacts() {
                             <div className="col-xl-12" key={index}>
                                 <div className="card">
                                     <div className="card-body pt-4 d-flex flex-column">
-                                        <h3 className="card-title">User Details</h3>
+                                        <h3 className="card-title">User Contacts</h3>
                                         <div className="row">
-                                            <h6 className="col-lg-5 col-md-6 label ">UserID</h6>
-                                            <p className="col-lg-7 col-md-6">{user.userUID}</p>
-                                        </div>
-                                        {/* Other user details rendering code remains the same */}
-                                        {/* Render user contacts */}
-                                        <h6 className="col-lg-5 col-md-6 label">User Contacts</h6>
-                                        <div className="col-lg-7 col-md-6">
-                                            {userContacts.map((contact, index) => (
-                                                <div key={index}>
-                                                    <p>{contact.name}</p>
-                                                    {/* Render phone numbers */}
-                                                    <ul>
-                                                        {contact.phoneNumbers.map((number, index) => (
-                                                            <li key={index}>{number}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            ))}
+                                    
+                                            <div className="col-lg-7 col-md-6">
+                                                {userContacts.length > 0 ? (
+                                                    userContacts.map((contact, idx) => (
+                                                        <div key={idx} className="contact-info">
+                                                            <p><strong>Name:</strong> {contact.name}</p>
+                                                            {contact.phoneNumbers.map((phone, phoneIdx) => (
+                                                                <p key={phoneIdx}><strong>Phone:</strong> {phone}</p>
+                                                            ))}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p>No contacts found.</p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -97,6 +103,5 @@ export default function UserContacts() {
                 </section>
             </main>
         </div>
-
     );
-};
+}
