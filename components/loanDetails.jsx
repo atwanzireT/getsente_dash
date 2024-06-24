@@ -131,19 +131,19 @@ export default function LoanDetailSection() {
                                     <p className="col-lg-7 col-md-6">{user.companyLocation}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label">Father/Mother's No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Father/Mother's No</h6>
                                     <p className="col-lg-7 col-md-6">{user.father ? `${user.father.name} (Contact: ${user.father.contact})` : "Not Available"}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label">Friend's No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Friend's No</h6>
                                     <p className="col-lg-7 col-md-6">{user.friend ? `${user.friend.name} (Contact: ${user.friend.contact})` : "Not Available"}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label">Sister/Brother's No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Sister/Brother's No</h6>
                                     <p className="col-lg-7 col-md-6">{user.sister ? `${user.sister.name} (Contact: ${user.sister.contact})` : "Not Available"}</p>
                                 </div>
                                 <div className="row">
-                                    <h6 className="col-lg-5 col-md-6 label">Wife/Husband's No:</h6>
+                                    <h6 className="col-lg-5 col-md-6 label">Wife/Husband's No</h6>
                                     <p className="col-lg-7 col-md-6">{user.wife ? `${user.wife.name} (Contact: ${user.wife.contact})` : "Not Available"}</p>
                                 </div>
                             </div>
