@@ -27,7 +27,7 @@ export default function HeaderBar() {
       <div className="d-flex align-items-center justify-content-between">
         <Link href="/" className="logo d-flex align-items-center">
           <Image src={logo} width={30} height={30} alt="" />
-          <span className="d-none d-lg-block">GetSente</span>
+          <span className="d-none d-lg-block nav-link">GetSente</span>
         </Link>
         <i className="bi bi-list toggle-sidebar-btn"></i>
       </div>

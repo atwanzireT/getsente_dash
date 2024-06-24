@@ -1,112 +1,136 @@
-import { useEffect, useState } from 'react';
-import { collection, getDocs, where, query, doc, getDoc } from 'firebase/firestore';
 import { firebase_firestore } from '@/firebaseconfig';
-import Cookies from 'js-cookie';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import React from 'react';
-import HeaderBar from '@/components/header';
-import Sidebar from '@/components/sidebar';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Link from 'next/link';
-import "../app/page.module.css";
-import "../app/globals.css";
+import Cookies from 'js-cookie';
 
-export default function UserContacts() {
-    const id = Cookies.get("id");
-    const [loading, setLoading] = useState(true);
-    const [userInfo, setUserInfo] = useState([]);
-    const [userContacts, setUserContacts] = useState([]);
+const DeclinedLoans = () => {
+  const [loanData, setLoanData] = useState([]);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-    const router = useRouter();
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 900);
+    };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!id) return;
+    handleResize();
 
-            setLoading(true);
-            try {
-                // Fetch user information
-                const userInfoRef = collection(firebase_firestore, "NIDinfo");
-                const userInfoQuery = query(userInfoRef, where("userUID", "==", id));
-                const userInfoSnapshot = await getDocs(userInfoQuery);
-                const userInfoData = userInfoSnapshot.docs.map(doc => doc.data());
-                setUserInfo(userInfoData);
+    window.addEventListener('resize', handleResize);
 
-                // Fetch user contacts
-                const contactDocRef = doc(firebase_firestore, "usercontacts", id);
-                const contactDocSnap = await getDoc(contactDocRef);
-                if (contactDocSnap.exists()) {
-                    // setUserContacts(contactDocSnap.data().contacts || []);
-                    console.log("Loading User Contacts: ", contactDocSnap.data());
-                } else {
-                    console.log("No such document!");
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-        fetchData();
-    }, [id]);
+  useEffect(() => {
+    const loanCollection = collection(firebase_firestore, 'loanRequest');
+    const loanQuery = query(loanCollection, where('status', '==', 'Declined'));
 
-    if (loading) {
-        return <p>Loading...</p>;
+    const unsubscribe = onSnapshot(loanQuery, (snapshot) => {
+      const loanRequests = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setLoanData(loanRequests);
+      setLoading(false);
+    }, (error) => {
+      console.error('Error fetching Loans:', error);
+      setLoading(false);
+    });
+
+    // Unsubscribe from the snapshot listener when the component unmounts
+    return () => unsubscribe();
+  }, []);
+
+  const pickLoanData = (loanid) => {
+    if (Cookies.get('id')) {
+      Cookies.remove('id');
     }
+    Cookies.set('id', loanid);
+    router.push('/loandetail/');
+  };
 
-    return (
-        <div>
-            <HeaderBar />
-            <Sidebar />
-            <main id="main" className="main">
-                <div className="pagetitle">
-                    <h1>Dashboard</h1>
-                    <nav>
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item">
-                                <Link href="/">Home</Link>
-                            </li>
-                            <li className="breadcrumb-item active">Dashboard</li>
-                        </ol>
-                    </nav>
-                </div>
-                <section className="section profile">
+  return (
+    <section className="section">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-12">
+            {isSmallScreen ?
+              loanData.map((loan) => (
+                <div className="card my-2" key={loan.id}>
+                  <div className="card-body">
                     <div className="row">
-                        {userInfo.map((user, index) => (
-                            <div className="col-xl-12" key={index}>
-                                <div className="card">
-                                    <div className="card-body pt-4 d-flex flex-column">
-                                        <h3 className="card-title">User Details</h3>
-                                        <div className="row">
-                                            <h6 className="col-lg-5 col-md-6 label">UserID</h6>
-                                            <p className="col-lg-7 col-md-6">{user.userUID}</p>
-                                        </div>
-                                        {/* Render other user details here */}
-                                        <h6 className="col-lg-5 col-md-6 label">User Contacts</h6>
-                                        <div className="col-lg-7 col-md-6">
-                                            {/* {userContacts.length > 0 ? (
-                                                userContacts.map((contact, index) => (
-                                                    <div key={index}>
-                                                        <p><strong>Name:</strong> {contact.name}</p>
-                                                        <ul>
-                                                            {contact.phoneNumbers.map((numberObj, idx) => (
-                                                                <li key={idx}>{numberObj.number}</li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <p>No contacts available</p>
-                                            )} */}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                      <div className="col-md-6">
+                        <p className="card-text">
+                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>User ID:</span> {loan.id}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Loan ID:</span> {loan.loanID}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Amount Paid:</span> {loan.amountPaid}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Amount Requested:</span> {loan.amountRequested}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Net Amount:</span> {loan.netAmount}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Transaction ID:</span> {loan.transactionId}
+                        </p>
+                        <p className="card-text">
+                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Status:</span> {loan.status}
+                        </p>
+
+                        <p className="card-text">
+                          <button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button>
+                        </p>
+                      </div>
                     </div>
-                </section>
-            </main>
+                  </div>
+                </div>
+              ))
+              : (
+                <div className="card">
+                  <div className="card-body">
+                   
+                    <table className="table datatable">
+                      <thead>
+                        <tr>
+                          <th>User ID</th>
+                          <th>Loan ID</th>
+                          <th>Amount Paid</th>
+                          <th>Amount Requested</th>
+                          <th>Net Amount</th>
+                          <th>Transaction ID</th>
+                          <th>Status</th>
+                          <th>Manage</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {loanData.map((loan) => (
+                          <tr key={loan.id}>
+                            <td>{loan.id}</td>
+                            <td>{loan.loanID}</td>
+                            <td>{loan.amountPaid}</td>
+                            <td>{loan.amountRequested}</td>
+                            <td>{loan.netAmount}</td>
+                            <td>{loan.transactionId}</td>
+                            <td>{loan.status}</td>
+                            <td><button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+          </div>
         </div>
-    );
-}
+      </div>
+    </section>
+  );
+};
+
+export default DeclinedLoans;
