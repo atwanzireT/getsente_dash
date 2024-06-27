@@ -18,6 +18,7 @@ export default function UserContacts() {
     const [userContacts, setUserContacts] = useState([]);
 
     const router = useRouter();
+    console.log("User ID: ",id)
 
     useEffect(() => {
         const fetchData = async () => {

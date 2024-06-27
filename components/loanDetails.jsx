@@ -214,13 +214,13 @@ export default function LoanDetailSection() {
                                         )}
                                         <div className="row">
                                             <div className='col'>
-                                                <Link href="/userContacts/" className="btn btn-primary btn-sm" onClick={() => Cookies.set('id', loan.userUID)}>View Phone Contacts</Link>
+                                                <Link href="/userContacts/" className="btn btn-primary btn-sm">View Phone Contacts</Link>
                                             </div>
                                             <div className='col'>
-                                                <Link href="/userActivities/" className="btn btn-primary btn-sm" onClick={() => Cookies.set('id', loan.userUID)}>Account Activities</Link>
+                                                <Link href="/userActivities/" className="btn btn-primary btn-sm">Account Activities</Link>
                                             </div>
                                             <div className='col'>
-                                                <Link href="/userIdentification/" className="btn btn-primary btn-sm" onClick={() => Cookies.set('id', loan.userUID)}>View Identification</Link>
+                                                <Link href="/userIdentification/" className="btn btn-primary btn-sm">View Identification</Link>
                                             </div>
                                         </div>
                                     </div>

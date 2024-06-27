@@ -55,32 +55,42 @@ const ApprovedLoans = () => {
       <div className="container">
         <div className="row">
           <div className="col-lg-12">
-            {isSmallScreen ?
+            {loading ? (
+              <div className="text-center my-5">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : loanData.length === 0 ? (
+              <div className="text-center my-5">
+                <p>No approved loan requests found.</p>
+              </div>
+            ) : isSmallScreen ? (
               loanData.map((loan) => (
                 <div className="card my-2" key={loan.id}>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-md-6">
                         <p className="card-text">
-                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>User ID:</span> {loan.id}
+                          <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>User ID:</span> {loan.id}
                         </p>
                         <p className="card-text">
-                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Loan ID:</span> {loan.loanID}
+                          <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Loan ID:</span> {loan.loanID}
                         </p>
                         <p className="card-text">
-                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Amount Paid:</span> {loan.amountPaid}
+                          <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Amount Paid:</span> {loan.amountPaid}
                         </p>
                         <p className="card-text">
-                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Amount Requested:</span> {loan.amountRequested}
+                          <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Amount Requested:</span> {loan.amountRequested}
                         </p>
                         <p className="card-text">
-                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Net Amount:</span> {loan.netAmount}
+                          <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Net Amount:</span> {loan.netAmount}
                         </p>
                         <p className="card-text">
-                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Transaction ID:</span> {loan.transactionId}
+                          <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Transaction ID:</span> {loan.transactionId}
                         </p>
                         <p className="card-text">
-                          <span className='text-primary text-bold' style={{ display: 'inline-block', width: '60%' }}>Status:</span> {loan.status}
+                          <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Status:</span> {loan.status}
                         </p>
 
                         <p className="card-text">
@@ -91,41 +101,41 @@ const ApprovedLoans = () => {
                   </div>
                 </div>
               ))
-              : (
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title">Datatables</h5>
-                    <table className="table datatable">
-                      <thead>
-                        <tr>
-                          <th>User ID</th>
-                          <th>Loan ID</th>
-                          <th>Amount Paid</th>
-                          <th>Amount Requested</th>
-                          <th>Net Amount</th>
-                          <th>Transaction ID</th>
-                          <th>Status</th>
-                          <th>Manage</th>
+            ) : (
+              <div className="card">
+                <div className="card-body">
+                  <h5 className="card-title">Datatables</h5>
+                  <table className="table datatable">
+                    <thead>
+                      <tr>
+                        <th>User ID</th>
+                        <th>Loan ID</th>
+                        <th>Amount Paid</th>
+                        <th>Amount Requested</th>
+                        <th>Net Amount</th>
+                        <th>Transaction ID</th>
+                        <th>Status</th>
+                        <th>Manage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loanData.map((loan) => (
+                        <tr key={loan.id}>
+                          <td>{loan.id}</td>
+                          <td>{loan.loanID}</td>
+                          <td>{loan.amountPaid}</td>
+                          <td>{loan.amountRequested}</td>
+                          <td>{loan.netAmount}</td>
+                          <td>{loan.transactionId}</td>
+                          <td>{loan.status}</td>
+                          <td><button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button></td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {loanData.map((loan) => (
-                          <tr key={loan.id}>
-                            <td>{loan.id}</td>
-                            <td>{loan.loanID}</td>
-                            <td>{loan.amountPaid}</td>
-                            <td>{loan.amountRequested}</td>
-                            <td>{loan.netAmount}</td>
-                            <td>{loan.transactionId}</td>
-                            <td>{loan.status}</td>
-                            <td><button className='btn btn-primary' onClick={() => { pickLoanData(loan.id) }}>Manage</button></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              )}
+              </div>
+            )}
           </div>
         </div>
       </div>

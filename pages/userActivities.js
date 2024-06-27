@@ -3,11 +3,13 @@ import { collection, getDocs } from "firebase/firestore";
 import { firebase_firestore } from "@/firebaseconfig";
 import HeaderBar from "@/components/header";
 import Sidebar from "@/components/sidebar";
+import Cookies from "js-cookie";
 import "../app/page.module.css";
 import "../app/globals.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const UserActivities = () => {
+    const id = Cookies.get("id");
     const [transactionData, setTransactionData] = useState([]);
     const [filteredTransactions, setFilteredTransactions] = useState([]);
     const [searchId, setSearchId] = useState(""); // State to hold the search ID
@@ -27,14 +29,14 @@ const UserActivities = () => {
     }, []);
 
     useEffect(() => {
-        // Filter transactions based on searchId whenever it changes
-        if (searchId.trim() !== "") {
-            const filtered = transactionData.filter(transaction => transaction.loanId === searchId);
-            setFilteredTransactions(filtered);
-        } else {
-            setFilteredTransactions(transactionData); // If searchId is empty, show all transactions
-        }
-    }, [searchId, transactionData]);
+        // Filter transactions based on the searchId and the id cookie
+        const filtered = transactionData.filter(transaction => {
+            const matchesSearchId = searchId.trim() === "" || transaction.loanId === searchId;
+            const matchesCookieId = transaction.loanId === id;
+            return matchesSearchId && matchesCookieId;
+        });
+        setFilteredTransactions(filtered);
+    }, [searchId, transactionData, id]);
 
     return (
         <div>
