@@ -49,6 +49,19 @@ export default function Dashboard() {
         fetchLoanRequests();
     }, []);
 
+    const getStatusBadgeClass = (status) => {
+        switch (status) {
+            case 'Approved':
+                return 'bg-success';
+            case 'Declined':
+                return 'bg-danger';
+            case 'Pending':
+                return 'bg-primary';
+            default:
+                return '';
+        }
+    };
+
     return (
         <section className="section dashboard">
             <div className="row">
@@ -142,14 +155,14 @@ export default function Dashboard() {
                                         </thead>
                                         <tbody>
                                             {loanRequestList.map((loan) => (
-                                                <tr key={loan.id}>
+                                                <tr key={loan.id} className={getStatusBadgeClass(loan.status)}>
                                                     <th scope="row">
                                                         <Link href="#">{loan.id}</Link>
                                                     </th>
                                                     <td>{loan.amountRequested}</td>
                                                     <td>{loan.netAmount}</td>
                                                     <td>
-                                                        <span className="badge bg-success">{loan.status}</span>
+                                                        <span className={`badge ${getStatusBadgeClass(loan.status)}`}>{loan.status}</span>
                                                     </td>
                                                 </tr>
                                             ))}

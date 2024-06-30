@@ -18,7 +18,7 @@ export default function Home() {
       })
       .catch((err) => {
         setLoading(false);
-        alert("Wrong Credentials!");
+        alert("Failed to Login in: ", err);
       });
   };
 

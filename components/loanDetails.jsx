@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs, where, doc, updateDoc, query, addDoc } from 'firebase/firestore';
+import { collection, getDocs, where, doc, updateDoc, query, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firebase_firestore } from '@/firebaseconfig';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
@@ -45,8 +45,37 @@ export default function LoanDetailSection() {
         setProcessing(true);
         try {
             const loanDocRef = doc(firebase_firestore, 'loanRequest', loanId);
+            const loan = loanData.find(loan => loan.id === loanId);
+
             await updateDoc(loanDocRef, { status: newStatus });
-            Cookies.set('id', userUID); // Set the userUID in cookies
+
+            // Add to the appropriate collection based on status
+            if (newStatus === 'Approved') {
+                await addDoc(collection(firebase_firestore, 'approvedLoans'), {
+                    ...loan,
+                    status: newStatus,
+                    timestamp: serverTimestamp()
+                });
+                await addDoc(collection(firestoreApp, "notifications"), {
+                    title: "Loan Feedback.",
+                    message: `Your Loan Request of ${loanAmount} has been sent successfully.`,
+                    uid: user.userUID,
+                    timestamp: serverTimestamp()
+                });
+            } else if (newStatus === 'Declined') {
+                await addDoc(collection(firebase_firestore, 'declinedLoans'), {
+                    ...loan,
+                    status: newStatus,
+                    timestamp: serverTimestamp()
+                });
+                await addDoc(collection(firestoreApp, "notifications"), {
+                    title: "Loan Feedback.",
+                    message: `Your Loan Request of ${loanAmount} has been sent successfully.`,
+                    uid: user.userUID,
+                    timestamp: serverTimestamp()
+                });
+            }
+
             alert('Loan status updated successfully');
             router.push("/home");
         } catch (error) {
@@ -76,9 +105,9 @@ export default function LoanDetailSection() {
 
                 alert('Payment confirmed successfully');
                 router.push("/home");
+            } else {
+                alert('Input Paid Amount.');
             }
-            alert('Input Paid Amount.');
-
         } catch (error) {
             console.error('Error confirming payment:', error);
         } finally {
