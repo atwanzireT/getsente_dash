@@ -81,7 +81,7 @@ const ApprovedLoans = () => {
                           <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Amount Paid:</span> {loan.amountPaid}
                         </p>
                         <p className="card-text">
-                          <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Amount Requested:</span> {loan.amountRequested}
+                          <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Gross Amount:</span> {loan.amountRequested}
                         </p>
                         <p className="card-text">
                           <span className='text-primary fw-bold' style={{ display: 'inline-block', width: '60%' }}>Net Amount:</span> {loan.netAmount}
@@ -111,7 +111,7 @@ const ApprovedLoans = () => {
                         <th>User ID</th>
                         <th>Loan ID</th>
                         <th>Amount Paid</th>
-                        <th>Amount Requested</th>
+                        <th>Gross Amount</th>
                         <th>Net Amount</th>
                         <th>Transaction ID</th>
                         <th>Status</th>

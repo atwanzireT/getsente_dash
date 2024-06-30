@@ -25,17 +25,25 @@ const DataTableSection = () => {
     const loanCollection = collection(firebase_firestore, 'loanRequest');
     const loanQuery = query(loanCollection, where('status', '==', 'Pending'));
 
-    const unsubscribe = onSnapshot(loanQuery, (snapshot) => {
-      const loanRequests = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setLoanData(loanRequests);
-      setLoading(false);
-    }, (error) => {
-      console.error('Error fetching Loans:', error);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      loanQuery,
+      (snapshot) => {
+        const loanRequests = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            created: data.created ? data.created.toDate() : null, // Convert Firestore timestamp to Date
+          };
+        });
+        setLoanData(loanRequests);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Error fetching Loans:', error);
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, []);
@@ -48,9 +56,9 @@ const DataTableSection = () => {
     router.push('/loandetail/');
   };
 
-  const formatDate = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleString();
+  const formatDate = (date) => {
+    if (!date) return '';
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   };
 
   return (
@@ -81,13 +89,16 @@ const DataTableSection = () => {
                           <span className="text-primary fw-bold">Loan ID:</span> {loan.loanID}
                         </p>
                         <p className="card-text">
-                          <span className="text-primary fw-bold">Amount Requested:</span> {loan.amountRequested}
+                          <span className="text-primary fw-bold">Gross Amount:</span> {loan.amountRequested}
                         </p>
                         <p className="card-text">
                           <span className="text-primary fw-bold">Net Amount:</span> {loan.netAmount}
                         </p>
                         <p className="card-text">
                           <span className="text-primary fw-bold">Status:</span> {loan.status}
+                        </p>
+                        <p className="card-text">
+                          <span className="text-primary fw-bold">Created:</span> {formatDate(loan.created)}
                         </p>
                         <p className="card-text">
                           <button className="btn btn-primary" onClick={() => pickLoanData(loan.id)}>Manage</button>
@@ -106,7 +117,7 @@ const DataTableSection = () => {
                       <tr>
                         <th>User ID</th>
                         <th>Loan ID</th>
-                        <th>Amount Requested</th>
+                        <th>Gross Amount</th>
                         <th>Net Amount</th>
                         <th>Status</th>
                         <th>Created</th>

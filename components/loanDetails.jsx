@@ -56,10 +56,10 @@ export default function LoanDetailSection() {
                     status: newStatus,
                     timestamp: serverTimestamp()
                 });
-                await addDoc(collection(firestoreApp, "notifications"), {
+                await addDoc(collection(firebase_firestore, "notifications"), {
                     title: "Loan Feedback.",
-                    message: `Your Loan Request of ${loanAmount} has been sent successfully.`,
-                    uid: user.userUID,
+                    message: `Your Loan Request of ${loan.amountRequested} has been Approved. Contact us for more information.`,
+                    uid: userUID,
                     timestamp: serverTimestamp()
                 });
             } else if (newStatus === 'Declined') {
@@ -68,10 +68,10 @@ export default function LoanDetailSection() {
                     status: newStatus,
                     timestamp: serverTimestamp()
                 });
-                await addDoc(collection(firestoreApp, "notifications"), {
+                await addDoc(collection(firebase_firestore, "notifications"), {
                     title: "Loan Feedback.",
-                    message: `Your Loan Request of ${loanAmount} has been sent successfully.`,
-                    uid: user.userUID,
+                    message: `Your Loan Request of ${loan.amountRequested} has been declined. Contact us for more information.`,
+                    uid: userUID,
                     timestamp: serverTimestamp()
                 });
             }
@@ -120,7 +120,13 @@ export default function LoanDetailSection() {
     }
 
     if (loading) {
-        return <p>Loading...</p>;
+        return (
+            <div className="text-center my-5">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -246,7 +252,7 @@ export default function LoanDetailSection() {
                                                 <Link href="/userContacts/" className="btn btn-primary btn-sm">View Phone Contacts</Link>
                                             </div>
                                             <div className='col'>
-                                                <Link href="/userActivities/" className="btn btn-primary btn-sm">Account Activities</Link>
+                                                <Link href="/userActivities/" className="btn btn-primary btn-sm">View Account Activities</Link>
                                             </div>
                                             <div className='col'>
                                                 <Link href="/userIdentification/" className="btn btn-primary btn-sm">View Identification</Link>
